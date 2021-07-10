@@ -35,7 +35,7 @@ contract('Tokenship', (accounts) => {
 
     describe('minting', async() => {
 
-        it ('mints multiple TKSs', async() => {
+        it('mints multiple TKSs', async() => {
             const nike = "NIKE"
             await contract.mint(accounts[1], 3, nike)
             const nikeSupply = await contract.getSupply(nike)
@@ -48,7 +48,7 @@ contract('Tokenship', (accounts) => {
             }
         })
 
-        it ('mints more TKSs for another association', async() => {
+        it('mints more TKSs for another association', async() => {
             const cos = "COS"
             await contract.mint(accounts[1], 2, cos);
             const cosSupply = await contract.getSupply(cos);
@@ -62,12 +62,24 @@ contract('Tokenship', (accounts) => {
             }
         })
 
-        it ('mints TKSs from non-minter role', async() => {
+        it('mints TKSs from non-minter role', async() => {
             const accountTwo = accounts[1];
             await contract.mint(accounts[0], 1, "NIKE", {from: accountTwo}).should.be.rejected;
 
             const totalSupply = await contract.totalSupply();
             assert.equal(totalSupply, 5, 'totalSupply should not have been changed')
         })
+
+        it('mints more TKSs for the og association from SAME address', async() => {
+            const nike = "NIKE"
+            await contract.mint(accounts[1], 1, nike)
+            const nikeSupply = await contract.getSupply(nike)
+            assert.equal(nikeSupply, 4, 'supply should be 4')
+        })
+
+        // it('mints more TKSs for the og association from DIFFERENT address', async() => {
+        //     const nike = "NIKE"
+        //     await contract.mint(accounts[1], 1, nike)
+        // })
     })
 })
