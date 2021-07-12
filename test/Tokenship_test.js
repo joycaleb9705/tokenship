@@ -37,7 +37,7 @@ contract('Tokenship', (accounts) => {
 
         it('mints multiple TKSs', async() => {
             const nike = "NIKE"
-            await contract.mint(accounts[1], 3, nike)
+            await contract.mint(nike, 3, 100000000)
             const nikeSupply = await contract.getSupply(nike)
             assert.equal(nikeSupply, 3, 'supply should be 3')
             
@@ -45,12 +45,14 @@ contract('Tokenship', (accounts) => {
             for (let i = 0; i < nikeTks.length; i++) {
                 assert.equal(nikeTks[0][i], i, 'id should be ' + i)
                 assert.equal(nikeTks[1][i], nike, 'association should be ' + nike)
+                assert.equal(nikeTks[2][i], 100000000, 'sales prices should be ' + 100000000)
+                assert.equal(nikeTks[3][i], accounts[0], 'minter should be ' + accounts[0])
             }
         })
 
         it('mints more TKSs for another association', async() => {
             const cos = "COS"
-            await contract.mint(accounts[1], 2, cos);
+            await contract.mint(cos, 2, 200000000);
             const cosSupply = await contract.getSupply(cos);
             assert.equal(cosSupply, 2, 'supply should be 2')
 
@@ -59,22 +61,20 @@ contract('Tokenship', (accounts) => {
             for (let i = 0; i < cosTks.length; i++) {
                 assert.equal(cosTks[0][i], i + n, 'id should be ' + (i + n))
                 assert.equal(cosTks[1][i], cos, 'association should be ' + cos)
+                assert.equal(cosTks[2][i], 200000000, 'sales price should be ' + 200000000)
+                assert.equal(cosTks[3][i], accounts[0], 'minter should be ' + accounts[0])
             }
         })
 
-        it('mints TKSs from non-minter role', async() => {
+        it('mints TKSs from a non-member', async() => {
             const accountTwo = accounts[1];
-            await contract.mint(accounts[0], 1, "NIKE", {from: accountTwo}).should.be.rejected;
+            await contract.mint("NIKE", 1, 100000000, { from: accountTwo }).should.be.rejected;
+
+            await contract.getAllInfo("NIKE", { from: accountTwo }).should.be.rejected;
+            await contract.getSupply("NIKE", { from: accountTwo }).should.be.rejected;
 
             const totalSupply = await contract.totalSupply();
             assert.equal(totalSupply, 5, 'totalSupply should not have been changed')
-        })
-
-        it('mints more TKSs for the og association from SAME address', async() => {
-            const nike = "NIKE"
-            await contract.mint(accounts[1], 1, nike)
-            const nikeSupply = await contract.getSupply(nike)
-            assert.equal(nikeSupply, 4, 'supply should be 4')
         })
 
         // it('mints more TKSs for the og association from DIFFERENT address', async() => {
