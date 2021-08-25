@@ -17,6 +17,8 @@
   },
   "dependencies": {
     "chai": "^4.3.4",
-    "chai-as-promised": "^7.1.1"
+    "chai-as-promised": "^7.1.1",
+    "ethereumjs-testrpc": "^6.0.3",
+    "web3": "^0.20.1"
   }
 }
