@@ -13,18 +13,19 @@ contract Tokenship is ERC721Enumerable, AccessControl {
     using Counters for Counters.Counter;
     Counters.Counter private tokenIds;
 
+    // Struct with Tokenship Info
     struct tksInfo {
         uint256 tokenId;
         string association;
     }
 
+    // All the Tokenship minted
     tksInfo[] private tksInfoList;
 
     // Checks if association name has already been used
     mapping(string => bool) private hasMinted;
     // For given association, checks if given address is a member
-    // isMember[_association][_address]
-    mapping(string => mapping(address => bool)) private isMember;
+    mapping(string => mapping(address => bool)) private isMember; // isMember[_association][_address]
     // List of all the TKSIndex info for a given association
     mapping(string => uint256[]) private associateToId;
 
@@ -38,6 +39,9 @@ contract Tokenship is ERC721Enumerable, AccessControl {
         _;
     }
 
+    /// @notice Mint a token
+    /// @param _association Association of the minted Tokenship
+    /// @param _n Number of Tokenship that will be minted
     function mint(string memory _association, uint256 _n) public {
         require(
             !hasMinted[_association] || isMember[_association][msg.sender],
@@ -64,6 +68,8 @@ contract Tokenship is ERC721Enumerable, AccessControl {
         emit Mint(_association, ids, _n);
     }
 
+    /// @notice Get Tokenship info
+    /// @param _tokenId Token ID
     function getInfo(uint256 _tokenId) public view returns (uint256, string memory) {
         tksInfo memory info = tksInfoList[_tokenId];
 
@@ -79,6 +85,8 @@ contract Tokenship is ERC721Enumerable, AccessControl {
         return (info.tokenId, info.association);
     }
 
+    /// @notice Get all info for the given association
+    /// @param _association Association
     function getAllInfo(string memory _association) public view onlyMember(_association) 
     returns (uint256[] memory, string[] memory) {
         uint256[] memory index = associateToId[_association];
@@ -97,6 +105,8 @@ contract Tokenship is ERC721Enumerable, AccessControl {
         return (ids, associations);
     }
 
+    /// @notice Get number of Tokens for a given association
+    /// @param _association Association
     function getSupply(string memory _association) public view onlyMember(_association) returns (uint256) {
         uint256[] memory index = associateToId[_association];
         return index.length;

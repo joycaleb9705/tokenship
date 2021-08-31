@@ -23,10 +23,15 @@ contract Marketplace is IERC721Receiver, ERC721Holder {
 
     event TokenBought(uint indexed tokenId, uint price, address newOwner, address prevOwner);
 
+    /// @notice Constructor
+    /// @param _token Tokeship address
     constructor(address _token) {
         token = Tokenship(_token);
     }
 
+    /// @notice Enlist the token for sale
+    /// @param _tokenId Token ID
+    /// @param _price Price
     function enlist(uint _tokenId, uint _price) public {
         require(token.ownerOf(_tokenId) == msg.sender);
         token.safeTransferFrom(msg.sender, address(this), _tokenId);
@@ -44,6 +49,8 @@ contract Marketplace is IERC721Receiver, ERC721Holder {
         emit NewSale(_tokenId, _price, msg.sender);
     }
 
+    /// @notice Get sale info
+    /// @param _tokenId Token ID
     function getSale(uint _tokenId) view public returns(uint, uint, address) {
         uint saleId = tokenToSale[_tokenId];
         Sale memory sale = sales[saleId];
@@ -53,7 +60,8 @@ contract Marketplace is IERC721Receiver, ERC721Holder {
         return (sale.tokenId, sale.price, sale.owner);
     }
 
-
+    /// @notice Buy Tokenship
+    /// @param _saleId Index of sales[]
     function buy(uint _saleId) public payable {
         Sale storage s = sales[_saleId];
 
@@ -74,6 +82,8 @@ contract Marketplace is IERC721Receiver, ERC721Holder {
         delete sales[_saleId];
     }
 
+    /// @notice Delists enlisted Tokenship
+    /// @param _tokenId Token ID
     function delist(uint _tokenId) public {
         require(sales[tokenToSale[_tokenId]].owner == msg.sender);
 
